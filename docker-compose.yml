@@ -1,0 +1,52 @@
+version: "3"
+
+services:
+  # nginx:
+  #   image: nginx:latest
+  #   ports:
+  #     - "80:8080"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+  #     - react_build:/var/www/react
+  #   depends_on:
+  #     - frontend
+  #     - backend
+  #   restart: always
+
+  backend:
+    restart: unless-stopped
+    container_name: django
+    build:
+      context: ./backend/backend
+      args:
+        DJANGO_ALLOWED_HOSTS: "*"
+        DJANGO_SECRET_KEY: "*"
+        DJANGO_CORS_ORIGIN_WHITELIST: "*"
+    # command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend/:/backend/backend
+    expose:
+      - 8000
+    # env_file:
+    #   - ./settings/dev/.env.dev
+    # depends_on:
+    #   - db
+#   frontend:
+#     build:
+#       context: ./react-repo
+#     command: ["yarn", "start"]
+#     ports:
+#       - 3000:3000
+#     volumes:
+#       - ./react-repo/:/react-repo
+#       - ./react-repo/node_modules/:/react-repo/node_modules
+#     # environment:
+#     #   - CI=true
+#     #   - CHOKIDAR_USEPOLLING=true
+#     #   - REACT_APP_BACKEND_URL=http://localhost:8000
+#     tty: true
+
+# volumes:
+#   postgres_data_dev: null
