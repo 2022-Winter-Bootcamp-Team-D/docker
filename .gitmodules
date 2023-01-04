@@ -1,0 +1,6 @@
+[submodule "react-repo"]
+	path = react-repo
+	url = https://github.com/2022-Winter-Bootcamp-Team-D/react-repo.git
+[submodule "backend"]
+	path = backend
+	url = https://github.com/2022-Winter-Bootcamp-Team-D/backend.git
