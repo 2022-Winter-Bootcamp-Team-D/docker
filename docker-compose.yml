@@ -33,20 +33,21 @@ services:
     #   - ./settings/dev/.env.dev
     # depends_on:
     #   - db
-#   frontend:
-#     build:
-#       context: ./react-repo
-#     command: ["yarn", "start"]
-#     ports:
-#       - 3000:3000
-#     volumes:
-#       - ./react-repo/:/react-repo
-#       - ./react-repo/node_modules/:/react-repo/node_modules
-#     # environment:
-#     #   - CI=true
-#     #   - CHOKIDAR_USEPOLLING=true
-#     #   - REACT_APP_BACKEND_URL=http://localhost:8000
-#     tty: true
 
-# volumes:
-#   postgres_data_dev: null
+  frontend:
+    build:
+      context: ./react-repo
+    command: ["yarn", "start"]
+    ports:
+      - 3000:3000
+    volumes:
+      - ./react-repo/:/react-repo
+      # - ./react-repo/node_modules/:/react-repo/node_modules
+    # environment:
+    #   - CI=true
+    #   - CHOKIDAR_USEPOLLING=true
+    #   - REACT_APP_BACKEND_URL=http://localhost:8000
+    tty: true
+
+volumes:
+  postgres_data_dev: null
