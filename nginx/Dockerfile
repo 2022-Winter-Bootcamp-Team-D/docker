@@ -2,8 +2,9 @@ FROM nginx:latest
 
 # Delete nginx default configuration file in virtual directory
 # 가상 공간의 nginx 기본 설정파일 삭제 후 작성한 설정파일로 대체
-RUN rm /etc/nginx/nginx.conf
-COPY nginx.conf /etc/nginx/conf.d/
-
 # RUN rm /etc/nginx/conf.d/default.conf
-# COPY project.conf /etc/nginx/conf.d/
+# COPY nginx.conf /etc/nginx/conf.d
+RUN rm /etc/nginx/conf.d/default.conf
+COPY default.conf /etc/nginx/conf.d
+
+# CMD [ "nginx", "-g", "daemon off;" ]
