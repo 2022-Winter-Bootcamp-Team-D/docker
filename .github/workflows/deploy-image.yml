@@ -1,0 +1,52 @@
+name: Build and Push
+
+# 트리거를 수행할 브랜치를 지정
+on:
+  push:
+    branches: [ main ]
+
+# 빌드 Job
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      # github repository에서 checkout
+      - name: checkout
+        uses: actions/checkout@master
+      
+      - name: create env file
+        run: |
+          touch .env
+          echo "${{ secrets.ENV_VARS }}" >> .env
+          
+      - name: create remote directory
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          script: mkdir -p /home/ubuntu/srv/ubuntu
+          
+      - name: copy source via ssh key
+        uses: burnett01/rsync-deployments@4.1
+        with: 
+          switches: -avzr --delete
+          remote_path: /home/ubuntu/srv/ubuntu
+          remote_host: ${{ secrets.HOST }}
+          remote_user: ubuntu
+          remote_key: ${{ secrets.KEY }}
+          
+      - name: excuting remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secretes.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          script: |
+            sh /home/ubuntu/srv/ubuntu/config/scripts/deploy.sh
+      
+    # - name: Checkout repository
+    #   uses: actions/checkout@v2
+    # - name: Checkout submodules
+    #   run: git submodule update --init --recursive
