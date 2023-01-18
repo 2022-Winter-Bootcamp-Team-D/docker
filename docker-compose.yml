@@ -23,6 +23,7 @@ services:
     container_name: django
     build:
       context: ./backend
+      dockerfile: Dockerfile
       args:
         DJANGO_ALLOWED_HOSTS: "*"
         DJANGO_SECRET_KEY: "*"
@@ -44,6 +45,7 @@ services:
     # restart: unless-stopped
     build:
       context: ./react-repo
+      dockerfile: Dockerfile
     command: ["yarn", "start"]
     ports:
       - 3000:3000
