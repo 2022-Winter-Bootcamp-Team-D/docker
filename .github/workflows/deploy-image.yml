@@ -13,7 +13,7 @@ jobs:
     steps:
       # github repository에서 checkout
       - name: checkout
-        uses: actions/checkout@main
+        uses: actions/checkout@master
 
       - name: create env file
         run: |
@@ -21,7 +21,7 @@ jobs:
           echo "${{ secrets.ENV_VARS }}" >> .env
 
       - name: create remote directory
-        uses: appleboy/ssh-action@main
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ubuntu
