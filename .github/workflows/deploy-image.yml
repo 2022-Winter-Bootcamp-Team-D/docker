@@ -24,9 +24,9 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.KEY }}
-          script: mkdir -p /home/ec2-user/srv
+          script: mkdir -p /home/ubuntu/srv
 
       - name: copy source via ssh key
         uses: burnett01/rsync-deployments@4.1
