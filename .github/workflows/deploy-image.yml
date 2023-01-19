@@ -3,7 +3,7 @@ name: Build and Push
 # 트리거를 수행할 브랜치를 지정
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 # 빌드 Job
 jobs:
@@ -26,7 +26,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ubuntu
           key: ${{ secrets.KEY }}
-          script: mkdir -p /home/ubuntu/srv/ubuntu
+          script: mkdir -p /home/ubuntu/srv
 
       - name: copy source via ssh key
         uses: burnett01/rsync-deployments@4.1

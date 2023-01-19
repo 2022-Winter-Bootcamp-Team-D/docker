@@ -1,28 +1,28 @@
 version: "3"
 
 services:
-  nginx:
-    container_name: nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    ports:
-      - 8000:80
-    volumes:
-      - static_volume:/backend/static # <-- bind the static volume
-      # - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
-    networks:
-      - backend_network
-    depends_on:
-      - backend
-      - frontend
-    restart: always
+  # nginx:
+  #   container_name: nginx
+  #   build:
+  #     context: ./nginx/.
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8000:80
+  #   volumes:
+  #     - static_volume:/backend/static # <-- bind the static volume
+  #     # - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+  #   networks:
+  #     - backend_network
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   restart: always
 
   backend:
     restart: unless-stopped
     container_name: django
     build:
-      context: ./backend
+      context: ./backend/.
       args:
         DJANGO_ALLOWED_HOSTS: "*"
         DJANGO_SECRET_KEY: "*"
@@ -30,7 +30,7 @@ services:
     ports:
       - 8080:8000
     volumes:
-      - ./backend:/backend
+      - ./backend/:/backend/
     networks:
       - backend_network
     # expose:
@@ -39,48 +39,48 @@ services:
       - ./backend/.env
     command: gunicorn --bind :8000 backend.wsgi:application
 
-  frontend:
-    container_name: frontend
-    # restart: unless-stopped
-    build:
-      context: ./react-repo
-    command: ["yarn", "start"]
-    ports:
-      - 3000:3000
-    volumes:
-      - ./react-repo/:/react-repo
-    #   - ./react-repo/node_modules/:/react-repo/node_modules
-    # environment:
-    #   - CI=true
-    #   - CHOKIDAR_USEPOLLING=true
-    #   - REACT_APP_BACKEND_URL=http://localhost:8000
-    tty: true
+  # frontend:
+  #   container_name: frontend
+  #   # restart: unless-stopped
+  #   build:
+  #     context: ./react-repo
+  #   command: ["yarn", "start"]
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./react-repo/:/react-repo
+  #   #   - ./react-repo/node_modules/:/react-repo/node_modules
+  #   # environment:
+  #   #   - CI=true
+  #   #   - CHOKIDAR_USEPOLLING=true
+  #   #   - REACT_APP_BACKEND_URL=http://localhost:8000
+  #   tty: true
 
-  elastic:
-    build:
-      context: ./elastic
-    container_name: elasticsearch
-    ports:
-      - 9200:9200
-      - 9300:9300
-    environment:
-      - discovery.type=single-node
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - TZ=Asia/Seoul
-    user: root
-    restart: always
-    privileged: true
+  # elastic:
+  #   build:
+  #     context: ./elastic
+  #   container_name: elasticsearch
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   environment:
+  #     - discovery.type=single-node
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #     - TZ=Asia/Seoul
+  #   user: root
+  #   restart: always
+  #   privileged: true
 
-  redis:
-    image: redis:alpine
-    command: redis-server --port 6379
-    container_name: redis
-    hostname: redis
-    labels:
-      - "name=redis"
-      - "mode=standalone"
-    ports:
-      - 6379:6379
+  # redis:
+  #   image: redis:alpine
+  #   command: redis-server --port 6379
+  #   container_name: redis
+  #   hostname: redis
+  #   labels:
+  #     - "name=redis"
+  #     - "mode=standalone"
+  #   ports:
+  #     - 6379:6379
 
 networks:
   backend_network:
