@@ -1,22 +1,22 @@
 version: "3"
 
 services:
-  # nginx:
-  #   container_name: nginx
-  #   build:
-  #     context: ./nginx/.
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - 8000:80
-  #   volumes:
-  #     - static_volume:/backend/static # <-- bind the static volume
-  #     # - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
-  #   networks:
-  #     - backend_network
-  #   depends_on:
-  #     - backend
-  #     - frontend
-  #   restart: always
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx/.
+      dockerfile: Dockerfile
+    ports:
+      - 8000:80
+    volumes:
+      - static_volume:/backend/static # <-- bind the static volume
+      # - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+    networks:
+      - backend_network
+    depends_on:
+      - backend
+      - frontend
+    restart: always
 
   backend:
     restart: unless-stopped
@@ -41,7 +41,7 @@ services:
 
   # frontend:
   #   container_name: frontend
-  #   # restart: unless-stopped
+  #   restart: unless-stopped
   #   build:
   #     context: ./react-repo
   #   command: ["yarn", "start"]
@@ -82,9 +82,47 @@ services:
   #   ports:
   #     - 6379:6379
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    depends_on:
+      - backend
+    networks:
+      - backend_network
+    expose:
+      - 9090
+
+  # node-exporter:
+  #   image: prom/node-exporter:latest
+  #   container_name: node_exporter
+  #   restart: unless-stopped
+  #   expose:
+  #     - 9100
+  #   ports:
+  #     - 9100:9100
+  #   networks:
+  #     - backend_network
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   port:
+  #     - 3300:3000
+  #   depends_on:
+  #     - backend
+  #     - prometheus
+  #   networks:
+  #     - backend_network
+
 networks:
   backend_network:
     driver: bridge
 volumes:
   postgres_data_dev: null
   static_volume:
+  prometheus_data: {}
+  grafana_data: {}
