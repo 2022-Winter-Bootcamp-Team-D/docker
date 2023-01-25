@@ -11,7 +11,6 @@ services:
       - 433:433
     volumes:
       - static_volume:/backend/static # <-- bind the static volume
-      # - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
     networks:
       - backend_network
     depends_on:
