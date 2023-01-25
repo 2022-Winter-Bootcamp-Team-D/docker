@@ -7,7 +7,8 @@ services:
       context: ./nginx/.
       dockerfile: Dockerfile
     ports:
-      - 8000:80
+      - 80:8080
+      - 433:433
     volumes:
       - static_volume:/backend/static # <-- bind the static volume
       # - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
@@ -28,68 +29,74 @@ services:
         DJANGO_SECRET_KEY: "*"
         DJANGO_CORS_ORIGIN_WHITELIST: "*"
     ports:
-      - 8080:8000
+      - 8000:8000
     volumes:
       - ./backend/:/backend/
     networks:
       - backend_network
     # expose:
-    #   - 8080
+    #   - 8000
     env_file:
       - ./backend/.env
     command: gunicorn --bind :8000 backend.wsgi:application
 
-  # frontend:
-  #   container_name: frontend
-  #   restart: unless-stopped
-  #   build:
-  #     context: ./react-repo
-  #   command: ["yarn", "start"]
-  #   ports:
-  #     - 3000:3000
-  #   volumes:
-  #     - ./react-repo/:/react-repo
-  #   #   - ./react-repo/node_modules/:/react-repo/node_modules
-  #   # environment:
-  #   #   - CI=true
-  #   #   - CHOKIDAR_USEPOLLING=true
-  #   #   - REACT_APP_BACKEND_URL=http://localhost:8000
-  #   tty: true
+  frontend:
+    container_name: frontend
+    restart: unless-stopped
+    build:
+      context: ./react-repo
+    command: ["yarn", "start"]
+    ports:
+      - 3000:3000
+    volumes:
+      - ./react-repo/:/react-repo
+    #   - ./react-repo/node_modules/:/react-repo/node_modules
+    # environment:
+    #   - CI=true
+    #   - CHOKIDAR_USEPOLLING=true
+    #   - REACT_APP_BACKEND_URL=http://localhost:8000
+    tty: true
 
-  # elastic:
-  #   build:
-  #     context: ./elastic
-  #   container_name: elasticsearch
-  #   ports:
-  #     - 9200:9200
-  #     - 9300:9300
-  #   environment:
-  #     - discovery.type=single-node
-  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - TZ=Asia/Seoul
-  #   user: root
-  #   restart: always
-  #   privileged: true
+  elastic:
+    build:
+      context: ./elastic
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - TZ=Asia/Seoul
+    user: root
+    restart: always
+    privileged: true
 
-  # redis:
-  #   image: redis:alpine
-  #   command: redis-server --port 6379
-  #   container_name: redis
-  #   hostname: redis
-  #   labels:
-  #     - "name=redis"
-  #     - "mode=standalone"
-  #   ports:
-  #     - 6379:6379
+  redis:
+    image: redis:alpine
+    command: redis-server --port 6379
+    container_name: redis
+    hostname: redis
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    ports:
+      - 6379:6379
 
   prometheus:
     image: prom/prometheus:latest
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus/:/etc/prometheus/prometheus.yml
+      - ./prometheus/:/etc/prometheus/
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
+      # - --storage.tsdb.path=/prometheus
+      # - --storage.tsdb.retention.time=90d # 90일보다 오래된 metrics는 삭제
+      # - --storage.tsdb.retention.size=10GB # 10GB를 넘을 시 오래된 metrics 삭제
+      # - --web.console.libraries=/usr/share/prometheus/console_libraries
+      # - --web.console.templates=/usr/share/proemtheus/consoles
+      # - --web.enable-admin-api
     depends_on:
       - backend
     networks:
@@ -97,24 +104,30 @@ services:
     expose:
       - 9090
 
-  # node-exporter:
-  #   image: prom/node-exporter:latest
-  #   container_name: node_exporter
-  #   restart: unless-stopped
-  #   expose:
-  #     - 9100
-  #   ports:
-  #     - 9100:9100
-  #   networks:
-  #     - backend_network
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    restart: unless-stopped
+    ports:
+      - 9100:9100
+    expose:
+      - 9100
+    networks:
+      - backend_network
 
   # grafana:
   #   image: grafana/grafana:latest
+  #   restart: unless-stopped
+  #   # environment:
+  #   #   - GF_SECURITY_ADMIN_USER=admin
+  #   #   - GF_SECURITY_ADMIN_PASSWORD=grafana
   #   port:
   #     - 3300:3000
   #   depends_on:
   #     - backend
   #     - prometheus
+  #   volumes:
+  #     - ./data/grafana:/var/lib/grafana
   #   networks:
   #     - backend_network
 
@@ -122,7 +135,7 @@ networks:
   backend_network:
     driver: bridge
 volumes:
-  postgres_data_dev: null
+  # postgres_data_dev: null
   static_volume:
   prometheus_data: {}
   grafana_data: {}
