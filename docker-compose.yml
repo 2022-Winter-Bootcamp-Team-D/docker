@@ -49,7 +49,7 @@ services:
       - 3000:3000
     volumes:
       - ./react-repo/:/react-repo
-    #   - ./react-repo/node_modules/:/react-repo/node_modules
+    # - ./react-repo/node_modules/:/react-repo/node_modules
     # environment:
     #   - CI=true
     #   - CHOKIDAR_USEPOLLING=true
@@ -114,21 +114,38 @@ services:
     networks:
       - backend_network
 
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   restart: unless-stopped
-  #   # environment:
-  #   #   - GF_SECURITY_ADMIN_USER=admin
-  #   #   - GF_SECURITY_ADMIN_PASSWORD=grafana
-  #   port:
-  #     - 3300:3000
-  #   depends_on:
-  #     - backend
-  #     - prometheus
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    # environment:
+    #   - GF_SECURITY_ADMIN_USER=admin
+    #   - GF_SECURITY_ADMIN_PASSWORD=grafana
+    #   - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - 3330:3000
+    depends_on:
+      - backend
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      # - ./data/grafana:/var/lib/grafana
+    networks:
+      - backend_network
+
+  # alertmanager:
+  #   image: prom/alertmanager:latest
+  #   ports:
+  #     - 9093:9093
+  #   restart: always
   #   volumes:
-  #     - ./data/grafana:/var/lib/grafana
+  #     - ./alertmanager/:/etc/alertmanager/
   #   networks:
   #     - backend_network
+
+  #   command:
+  #     - '--config.file=/etc/alertmanager/config.yml'
+  #     - '--storage.path=/alertmanager'
 
 networks:
   backend_network:
