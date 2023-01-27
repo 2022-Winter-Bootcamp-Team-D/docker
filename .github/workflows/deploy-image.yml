@@ -22,23 +22,22 @@ jobs:
           touch .env
           echo "${{ secrets.ENV_VARS }}" >> .env
 
-      # - name: create remote directory
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ubuntu
-      #     password: ${{ secrets.PASSWORD }}
-      #     script: mkdir -p /home/ubuntu/srv
+      - name: create remote directory
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          script: mkdir -p /home/ubuntu/srv
 
-      # - name: copy source via ssh key
-      #   uses: burnett01/rsync-deployments@4.1
-      #   with:
-      #     switches: -avzr --delete
-      #     remote_path: /home/ubuntu/srv/ubuntu
-      #     remote_host: ${{ secrets.HOST }}
-      #     remote_user: ubuntu
-      #     remote_key: ${{ secrets.KEY }}
-      #     #remote_password: ${{ secrets.PASSWORD }}
+      - name: copy source via ssh key
+        uses: burnett01/rsync-deployments@4.1
+        with:
+          switches: -avzr --delete
+          remote_path: /home/ubuntu/srv/ubuntu
+          remote_host: ${{ secrets.HOST }}
+          remote_user: ubuntu
+          remote_key: ${{ secrets.KEY }}
 
       - name: excute remote ssh then run script
         uses: appleboy/ssh-action@master
@@ -47,7 +46,6 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY }}
           script: |
-            mkdir -p /home/ubuntu/srv
             sh /home/ubuntu/srv/ubuntu/deploy.sh
 
 #     # - name: Checkout repository
