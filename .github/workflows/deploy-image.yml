@@ -35,8 +35,8 @@ jobs:
           remote_path: /home/ubuntu/srv/ubuntu
           remote_host: ${{ secrets.HOST }}
           remote_user: ubuntu
-#           remote_key: ${{ secrets.KEY }}
-          remote_password: ${{ secrets.PASSWORD }}
+          remote_key: ${{ secrets.KEY }}
+          #remote_password: ${{ secrets.PASSWORD }}
 
       - name: excuting remote ssh commands using password
         uses: appleboy/ssh-action@master
