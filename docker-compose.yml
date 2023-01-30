@@ -3,20 +3,27 @@ version: "3"
 services:
   nginx:
     container_name: nginx
+    restart: unless-stopped
     build:
-      context: ./nginx/.
+      context: ./nginx
       dockerfile: Dockerfile
     ports:
-      - 80:8080
-      - 433:433
+      - 80:80
+    #expose:
+    #  - 80
+    user: root
+    # volumes:
+    # - static:/usr/src/app/static
+    # - media:/usr/src/app/media
     volumes:
-      - static_volume:/backend/static # <-- bind the static volume
-    networks:
-      - backend_network
+      # - static_volume:/backend/static # <-- bind the static volume
+      - build_folder:/var/www/frontend
+    # - ./nginx/log:/var/log/nginx # nginx log path (require same option on nginx container)
+    # networks:
+    #   - backend_network
     depends_on:
       - backend
       - frontend
-    restart: always
 
   backend:
     restart: unless-stopped
@@ -32,11 +39,11 @@ services:
       - 8000:8000
     volumes:
       - ./backend/:/backend/
-      - static_volume:/backend/static # <-- bind the static volume
-    stdin_open: true
+      # - static_volume:/backend/static # <-- bind the static volume
+    # stdin_open: true
     tty: true
-    networks:
-      - backend_network
+    # networks:
+    #   - backend_network
     expose:
       - 8000
     env_file:
@@ -48,16 +55,18 @@ services:
     restart: unless-stopped
     build:
       context: ./react-repo
+      dockerfile: Dockerfile
     command: ["yarn", "start"]
     ports:
       - 3000:3000
     volumes:
-      - ./react-repo/:/react-repo
-    # - ./react-repo/node_modules/:/react-repo/node_modules
-    # environment:
-    #   - CI=true
-    #   - CHOKIDAR_USEPOLLING=true
-    #   - REACT_APP_BACKEND_URL=http://localhost:8000
+      - ./react-repo/:/react-repo/
+      - build_folder:/react-repo/build
+      - ./react-repo/node_modules/:/react-repo/node_modules
+    environment:
+      - CI=true
+      - CHOKIDAR_USEPOLLING=true
+      - REACT_APP_BACKEND_URL=http://localhost:8000
     tty: true
 
   elastic:
@@ -106,8 +115,8 @@ services:
       - "--web.enable-lifecycle"
     depends_on:
       - backend
-    networks:
-      - backend_network
+    # networks:
+    #   - backend_network
     expose:
       - 9090
 
@@ -119,8 +128,8 @@ services:
       - 9100:9100
     expose:
       - 9100
-    networks:
-      - backend_network
+    # networks:
+    #   - backend_network
 
   grafana:
     image: grafana/grafana:latest
@@ -138,8 +147,8 @@ services:
       - grafana_data:/var/lib/grafana
       # - ./grafana/provisioning:/etc/grafana/provisioning
       # - ./data/grafana:/var/lib/grafana
-    networks:
-      - backend_network
+    # networks:
+    #   - backend_network
 
   # alertmanager:
   #   image: prom/alertmanager:latest
@@ -148,17 +157,15 @@ services:
   #   restart: always
   #   volumes:
   #     - ./alertmanager/:/etc/alertmanager/
-  #   networks:
-  #     - backend_network
+  #   # networks:
+  #   #   - backend_network
 
   #   command:
-  #     - '--config.file=/etc/alertmanager/config.yml'
-  #     - '--storage.path=/alertmanager'
+  #     - "--config.file=/etc/alertmanager/config.yml"
+  #     - "--storage.path=/alertmanager"
 
-networks:
-  backend_network:
-    driver: bridge
 volumes:
+  build_folder:
   # postgres_data_dev: null
   static_volume:
   prometheus_data: {}
