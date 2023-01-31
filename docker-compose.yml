@@ -128,8 +128,6 @@ services:
       - 9100:9100
     expose:
       - 9100
-    # networks:
-    #   - backend_network
 
   grafana:
     image: grafana/grafana:latest
@@ -147,8 +145,6 @@ services:
       - grafana_data:/var/lib/grafana
       # - ./grafana/provisioning:/etc/grafana/provisioning
       # - ./data/grafana:/var/lib/grafana
-    # networks:
-    #   - backend_network
 
   # alertmanager:
   #   image: prom/alertmanager:latest
