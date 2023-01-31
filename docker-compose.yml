@@ -48,6 +48,8 @@ services:
       - 8000
     env_file:
       - ./backend/.env
+    depends_on:
+      - redis
     command: gunicorn --bind :8000 backend.wsgi:application
 
   frontend:
