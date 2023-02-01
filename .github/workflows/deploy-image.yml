@@ -4,7 +4,7 @@ name: waiter CI/CD
 on:
   push:
     branches:
-      - develop
+      # - develop
       - main
 
 # 빌드 Job
