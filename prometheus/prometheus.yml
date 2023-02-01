@@ -1,0 +1,31 @@
+# Docker/prometheus.yml
+global:
+  scrape_interval: 15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+  evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+  # 'scrpae_timeout' 이라는 설정은 기본적으로 10초로 세팅되어 있다.
+
+  external_labels:
+    monitor: "waiter-monitor"
+
+# # Alertmanager 설정
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets:
+#           # - alertmanager:9093
+
+# 매트릭을 수집할 엔드포인트를 설정. 여기서는 Prometheus 서버 자신을 가리키는 설정을 했다.
+scrape_configs:
+  # 이 설정에서 수집한 타임시리즈에 'job=<job_name>'으로 잡의 이름을 설정한다.
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  - job_name: "backend"
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["backend:8000"]

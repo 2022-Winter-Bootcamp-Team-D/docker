@@ -1,9 +1,11 @@
-name: Build and Push
+name: waiter CI/CD
 
 # 트리거를 수행할 브랜치를 지정
 on:
   push:
-    branches: [develop]
+    branches:
+      # - develop
+      - main
 
 # 빌드 Job
 jobs:
@@ -38,7 +40,14 @@ jobs:
 #           remote_key: ${{ secrets.KEY }}
           remote_password: ${{ secrets.PASSWORD }}
 
-      - name: excuting remote ssh commands using password
+      # - name: create firebase key
+      #   run: |
+      #     cd home/ubuntu/srv/ubuntu/backend/store
+      #     touch ./service_account.json
+      #     echo "${{ secrets.FIREBASE_KEY }}" > ./service_account.json
+      #   shell: bash
+
+      - name: excute remote ssh then run script
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -47,7 +56,8 @@ jobs:
           script: |
             sh /home/ubuntu/srv/ubuntu/deploy.sh
 
-    # - name: Checkout repository
-    #   uses: actions/checkout@v2
-    # - name: Checkout submodules
-    #   run: git submodule update --init --recursive
+#     # - name: Checkout repository
+#     #   uses: actions/checkout@v2
+#     # - name: Checkout submodules
+#     #   run: git submodule update --init --recursive
+
