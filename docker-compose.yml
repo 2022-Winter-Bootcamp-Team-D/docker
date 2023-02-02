@@ -89,8 +89,7 @@ services:
   redis:
     image: redis:alpine
     command: 
-      - "redis-server --port 6379"
-      - "redis-server --appendonly yes --replica-read-only no"
+      - "redis-server"
     container_name: redis
     hostname: redis
     labels:
