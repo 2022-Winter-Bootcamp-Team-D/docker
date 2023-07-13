@@ -53,8 +53,7 @@ docker
 - **react**
   - [@HAERYN](https://github.com/HAERYN)
   - [@mineii](https://github.com/mineii)
-  - [@changyeonyes](https://github.com/changyeonyes)
-  - [@shrewdas](https://github.com/shrewdas)
+
 
 ## 💻 Backend팀
 
